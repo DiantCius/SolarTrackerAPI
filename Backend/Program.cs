@@ -98,6 +98,7 @@ try
 {
     var dbContext = serviceProvider.GetRequiredService<ApplicationContext>();
     dbContext.Database.Migrate();
+    Console.WriteLine("Dupa");
 }
 catch
 {

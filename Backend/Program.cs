@@ -66,9 +66,42 @@ builder.Services.AddSwaggerGen(c =>
 
 });
 
-var defaultConnectionString = builder.Configuration.GetConnectionString("Default");
+var defaultConnectionString = string.Empty;
+
+if (builder.Environment.EnvironmentName == "Development")
+{
+    defaultConnectionString = builder.Configuration.GetConnectionString("Default");
+}
+else
+{
+    // Use connection string provided at runtime by Heroku.
+    var connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+    connectionUrl = connectionUrl.Replace("postgres://", string.Empty);
+    var userPassSide = connectionUrl.Split("@")[0];
+    var hostSide = connectionUrl.Split("@")[1];
+
+    var user = userPassSide.Split(":")[0];
+    var password = userPassSide.Split(":")[1];
+    var host = hostSide.Split("/")[0];
+    var database = hostSide.Split("/")[1].Split("?")[0];
+
+    defaultConnectionString = $"Host={host};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+}
+
+//var defaultConnectionString = builder.Configuration.GetConnectionString("Default");
 builder.Services.AddDbContext<ApplicationContext>(options =>
    options.UseNpgsql(defaultConnectionString));
+
+var serviceProvider = builder.Services.BuildServiceProvider();
+try
+{
+    var dbContext = serviceProvider.GetRequiredService<ApplicationContext>();
+    dbContext.Database.Migrate();
+}
+catch
+{
+}
 
 
 var issuer = "Issuer";

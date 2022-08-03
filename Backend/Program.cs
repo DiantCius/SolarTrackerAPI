@@ -163,4 +163,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+Console.WriteLine("Dupa2");
+
 app.Run();

@@ -1,5 +1,6 @@
 ﻿using Backend.DTO.Requests;
 using Backend.Models;
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Firestore;
 
 namespace Backend.DataAccess
@@ -11,9 +12,12 @@ namespace Backend.DataAccess
 
         public FirebaseRepository()
         {
+            var connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
             string filePath = "C:\\Users\\misio\\source\\repos\\Backend\\energyproduction-36021-firebase-adminsdk-cjdi2-27a9ef242f.json";
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", filePath);
             projectId = "energyproduction-36021";
+            FirestoreDbBuilder builder = new FirestoreDbBuilder();
+            var credential = GoogleCredential.FromJson("xd");
             fireStoreDb = FirestoreDb.Create(projectId);
         }
 

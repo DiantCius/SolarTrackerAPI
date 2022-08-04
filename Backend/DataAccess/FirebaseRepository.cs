@@ -12,7 +12,7 @@ namespace Backend.DataAccess
         public FirebaseRepository()
         {
             var connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-            string filePath = "app\\energyproduction-36021-firebase-adminsdk-cjdi2-27a9ef242f.json";
+            string filePath = "energyproduction-36021-firebase-adminsdk-cjdi2-27a9ef242f.json";
             Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", filePath);
             projectId = "energyproduction-36021";
             fireStoreDb = FirestoreDb.Create(projectId);

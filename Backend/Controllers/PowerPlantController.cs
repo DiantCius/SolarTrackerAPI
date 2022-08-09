@@ -38,7 +38,7 @@ namespace Backend.Controllers
 
         [HttpPost("add")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<PowerPlantListResponse>> CreatePowerPlant([FromBody] CreatePowerPlantRequest createPowerPlantRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult<CreatePowerPlantResponse>> CreatePowerPlant([FromBody] CreatePowerPlantRequest createPowerPlantRequest, CancellationToken cancellationToken)
         {
             var response = await _powerPlantsHandler.CreatePowerPlantAsync(createPowerPlantRequest, cancellationToken);
             return Ok(response);

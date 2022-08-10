@@ -117,6 +117,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = signingCredentials.Key,
         ValidIssuer = issuer,
         ValidAudience = audience,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
     };
 });
 

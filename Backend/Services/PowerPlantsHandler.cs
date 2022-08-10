@@ -53,11 +53,11 @@ namespace Backend.Services
 
         public async Task DeletePowerPlantAsync(DeletePowerPlantRequest deletePowerPlantRequest, CancellationToken cancellationToken)
         {
-            var powerPlantToDelete = await _context.PowerPlants.Where(x => x.PowerPlantId == deletePowerPlantRequest.PowerPlantId).FirstAsync(cancellationToken);
+            var powerPlantToDelete = await _context.PowerPlants.Where(x => x.SerialNumber == deletePowerPlantRequest.SerialNumber).FirstAsync(cancellationToken);
             var serialNumber = powerPlantToDelete.SerialNumber;
             if (powerPlantToDelete == null)
             {
-                throw new ApiException($"Powerplant with: {deletePowerPlantRequest.PowerPlantId} id not found", HttpStatusCode.NotFound);
+                throw new ApiException($"Powerplant with: {deletePowerPlantRequest.SerialNumber} serial number not found", HttpStatusCode.NotFound);
             }
 
             _context.PowerPlants.Remove(powerPlantToDelete);

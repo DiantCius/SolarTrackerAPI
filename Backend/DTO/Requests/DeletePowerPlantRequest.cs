@@ -1,4 +1,4 @@
 ﻿namespace Backend.DTO.Requests
 {
-    public record DeletePowerPlantRequest(int PowerPlantId);
+    public record DeletePowerPlantRequest(string SerialNumber);
 }

@@ -2,5 +2,5 @@
 
 namespace Backend.DTO.Responses
 {
-    public record CreatePowerPlantResponse(string Name, string Location, PowerPlantType PowerPlantType);
+    public record CreatePowerPlantResponse(string Name, string Location, PowerPlantType PowerPlantType, string SerialNumber, ConnectionStatus ConnectionStatus);
 }

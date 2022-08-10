@@ -48,7 +48,7 @@ namespace Backend.Services
             int[] state =  { 0, 0, 0 };
             Indications.AddSolarTrackerIndication(new SolarTrackerIndication { SerialNumber = newPowerPlant.SerialNumber, Azimuth = 0F, Elevation = 0F, WindSpeed = 0F, State = state });
 
-            return new CreatePowerPlantResponse(newPowerPlant.Name,newPowerPlant.Location, newPowerPlant.PowerPlantType);
+            return new CreatePowerPlantResponse(newPowerPlant.Name,newPowerPlant.Location, newPowerPlant.PowerPlantType, newPowerPlant.SerialNumber, newPowerPlant.ConnectionStatus);
         }
 
         public async Task DeletePowerPlantAsync(DeletePowerPlantRequest deletePowerPlantRequest, CancellationToken cancellationToken)

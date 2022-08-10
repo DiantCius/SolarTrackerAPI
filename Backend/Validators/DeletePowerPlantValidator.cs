@@ -7,7 +7,7 @@ namespace Backend.Validators
     {
         public DeletePowerPlantValidator()
         {
-            RuleFor(x => x.PowerPlantId).NotNull().NotEmpty();
+            RuleFor(x => x.SerialNumber).NotNull().NotEmpty();
         }
     }
 }

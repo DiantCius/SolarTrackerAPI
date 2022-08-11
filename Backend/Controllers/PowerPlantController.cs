@@ -9,11 +9,11 @@ using Microsoft.AspNetCore.Mvc;
 namespace Backend.Controllers
 {
     [Route("[controller]")]
-    public class PowerPlantController : ControllerBase
+    public class PowerplantController : ControllerBase
     {
         private readonly PowerPlantsHandler _powerPlantsHandler;
 
-        public PowerPlantController(PowerPlantsHandler powerPlantsHandler)
+        public PowerplantController(PowerPlantsHandler powerPlantsHandler)
         {
             _powerPlantsHandler = powerPlantsHandler;
         }
@@ -51,7 +51,7 @@ namespace Backend.Controllers
             return Ok(response);
         }
 
-        [HttpDelete("/delete")]
+        [HttpDelete("delete")]
         public async Task<ActionResult> DeletePowerPlant(DeletePowerPlantRequest deletePowerPlantRequest, CancellationToken cancellationToken)
         {
             await _powerPlantsHandler.DeletePowerPlantAsync(deletePowerPlantRequest, cancellationToken);

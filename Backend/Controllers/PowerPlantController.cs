@@ -52,10 +52,10 @@ namespace Backend.Controllers
         }
 
         [HttpDelete("delete")]
-        public async Task<ActionResult> DeletePowerPlant(DeletePowerPlantRequest deletePowerPlantRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult<DeletePowerPlantResponse>> DeletePowerPlant(DeletePowerPlantRequest deletePowerPlantRequest, CancellationToken cancellationToken)
         {
-            await _powerPlantsHandler.DeletePowerPlantAsync(deletePowerPlantRequest, cancellationToken);
-            return Ok();
+            var response = await _powerPlantsHandler.DeletePowerPlantAsync(deletePowerPlantRequest, cancellationToken);
+            return Ok(response);
         }
     }
 }

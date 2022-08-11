@@ -51,7 +51,7 @@ namespace Backend.Services
             return new CreatePowerPlantResponse(newPowerPlant.Name,newPowerPlant.Location, newPowerPlant.PowerPlantType, newPowerPlant.SerialNumber, newPowerPlant.ConnectionStatus);
         }
 
-        public async Task DeletePowerPlantAsync(DeletePowerPlantRequest deletePowerPlantRequest, CancellationToken cancellationToken)
+        public async Task<DeletePowerPlantResponse> DeletePowerPlantAsync(DeletePowerPlantRequest deletePowerPlantRequest, CancellationToken cancellationToken)
         {
             var powerPlantToDelete = await _context.PowerPlants.Where(x => x.SerialNumber == deletePowerPlantRequest.SerialNumber).FirstAsync(cancellationToken);
             var serialNumber = powerPlantToDelete.SerialNumber;
@@ -64,6 +64,7 @@ namespace Backend.Services
             await _context.SaveChangesAsync(cancellationToken);
 
             await _firebaseRepository.DeleteCollection(serialNumber, 10);
+            return new DeletePowerPlantResponse(powerPlantToDelete.Name, powerPlantToDelete.Location, powerPlantToDelete.PowerPlantType, powerPlantToDelete.SerialNumber, powerPlantToDelete.ConnectionStatus);
         }
 
         public async Task<PowerPlantListResponse> GetAllPowerPlantsAsync(CancellationToken cancellationToken)

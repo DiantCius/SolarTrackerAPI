@@ -112,12 +112,13 @@ builder.Services.AddAuthentication(options =>
     options.SaveToken = true;
     options.TokenValidationParameters = new TokenValidationParameters
     {
+        ValidateIssuer = true,
+        ValidateLifetime = true,
+        ValidateActor = true,
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = signingCredentials.Key,
         ValidIssuer = issuer,
         ValidAudience = audience,
-        ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
     };
 });
 
@@ -160,6 +161,8 @@ var app = builder.Build();
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
 //app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

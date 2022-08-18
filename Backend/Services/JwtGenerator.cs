@@ -1,6 +1,8 @@
 ﻿using Backend.Models;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Backend.Services
 {
@@ -26,10 +28,10 @@ namespace Backend.Services
                 _jwtOptions.Issuer,
                 _jwtOptions.Audience,
                 claims,
-                _jwtOptions.NotBefore,
-                _jwtOptions.Expires,
+                DateTime.UtcNow,
+                DateTime.UtcNow.AddMinutes(1.0),
                 _jwtOptions.SigningCredentials
-                );
+                ) ;
 
             return tokenHandler.WriteToken(jwt);
         }

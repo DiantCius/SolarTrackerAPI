@@ -29,7 +29,7 @@ namespace Backend.Services
                 _jwtOptions.Audience,
                 claims,
                 DateTime.UtcNow,
-                DateTime.UtcNow.AddMinutes(1.0),
+                DateTime.UtcNow.AddHours(1.0),
                 _jwtOptions.SigningCredentials
                 ) ;
 

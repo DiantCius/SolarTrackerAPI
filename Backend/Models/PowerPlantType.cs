@@ -1,6 +1,6 @@
 ﻿namespace Backend.Models
 {
-    public enum PowerPlantType
+    public enum PowerplantType
     {
         Tracking,
         Stationary

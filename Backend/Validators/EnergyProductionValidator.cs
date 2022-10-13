@@ -1,9 +1,9 @@
-﻿using Backend.Models;
+﻿using Backend.DTO;
 using FluentValidation;
 
 namespace Backend.Validators
 {
-    public class EnergyProductionValidator : AbstractValidator<EnergyProduction>
+    public class EnergyProductionValidator : AbstractValidator<EnergyProductionDto>
     {
         public EnergyProductionValidator()
         {

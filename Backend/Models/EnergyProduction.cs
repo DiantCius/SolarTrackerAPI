@@ -1,18 +1,17 @@
-﻿using Google.Cloud.Firestore;
-using Newtonsoft.Json;
-
+﻿using System.Text.Json.Serialization;
 namespace Backend.Models
 {
-    [FirestoreData]
     public class EnergyProduction
     {
-        [FirestoreProperty]
+        public int EnergyProductionId { get; set; }
         public string CurrentProduction { get; set; }
-        [FirestoreProperty]
         public string DailyProduction { get; set; }
-        [FirestoreProperty]
         public DateTime CurrentTime { get; set; }
         public string SerialNumber { get; set; }
+        [JsonIgnore]
+        public int PowerplantId { get; set; }
+        [JsonIgnore]
+        public Powerplant Powerplant { get; set; }
 
     }
 }

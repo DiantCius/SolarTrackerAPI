@@ -2,5 +2,5 @@
 
 namespace Backend.DTO.Requests
 {
-    public record CreatePowerPlantRequest(string Name, string Location, PowerPlantType PowerPlantType, string SerialNumber);
+    public record CreatePowerplantRequest(string Name, string Location, PowerplantType PowerplantType, string SerialNumber);
 }

@@ -2,5 +2,5 @@
 
 namespace Backend.DTO.Responses
 {
-    public record DeletePowerPlantResponse(string Name, string Location, PowerPlantType PowerPlantType, string SerialNumber, ConnectionStatus ConnectionStatus);
+    public record DeletePowerplantResponse(string Name, string Location, PowerplantType PowerplantType, string SerialNumber, ConnectionStatus ConnectionStatus);
 }

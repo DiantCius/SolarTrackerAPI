@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Backend.Validators
 {
-    public class UpdatePowerPlantStatusValidator : AbstractValidator<UpdatePowerPlantStatusRequest>
+    public class UpdatePowerplantStatusValidator : AbstractValidator<UpdatePowerplantStatusRequest>
     {
-        public UpdatePowerPlantStatusValidator()
+        public UpdatePowerplantStatusValidator()
         {
             RuleFor(x => x.SerialNumber).NotNull().NotEmpty();
             RuleFor(x => x.ConnectionStatus).IsInEnum();

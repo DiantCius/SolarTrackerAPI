@@ -3,14 +3,15 @@ using System.Text.Json.Serialization;
 
 namespace Backend.Models
 {
-    public class PowerPlant
+    public class Powerplant
     {
-        public int PowerPlantId { get; set; }
+        public int PowerplantId { get; set; }
         public string Name { get; set; }
         public string Location { get; set; }
-        public PowerPlantType PowerPlantType { get; set; }
+        public PowerplantType PowerplantType { get; set; }
         public string SerialNumber { get; set; }
         public ConnectionStatus ConnectionStatus { get; set; }
+        public List<EnergyProduction> EnergyProductions { get; set; }
         [JsonIgnore]
         public int UserId { get; set; }
         [JsonIgnore]

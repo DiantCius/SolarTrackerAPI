@@ -18,7 +18,7 @@ namespace Backend.DataAccess
             fireStoreDb = FirestoreDb.Create(projectId);
         }
 
-        public async Task AddEnergyProduction(EnergyProduction energyProduction, CancellationToken cancellationToken)
+        public async Task AddEnergyProduction(FirebaseEnergyProduction energyProduction, CancellationToken cancellationToken)
         {
             CollectionReference colRef = fireStoreDb.Collection(energyProduction.SerialNumber);
             await colRef.AddAsync(energyProduction, cancellationToken);
@@ -27,7 +27,7 @@ namespace Backend.DataAccess
         public async Task AddEnergyProductions(AddEnergyProductionsRequest addEnergyProductionsRequest, CancellationToken cancellationToken)
         {
             CollectionReference colRef = fireStoreDb.Collection(addEnergyProductionsRequest.SerialNumber);
-            foreach (EnergyProduction energyProduction in addEnergyProductionsRequest.EnergyProductions)
+            foreach (FirebaseEnergyProduction energyProduction in addEnergyProductionsRequest.EnergyProductions)
             {
                 await colRef.AddAsync(energyProduction, cancellationToken);
             }
@@ -50,22 +50,22 @@ namespace Backend.DataAccess
             Console.WriteLine("Finished deleting all documents from the collection.");
         }
 
-        public async Task<List<EnergyProduction>> GetAllEnergyProductions(string serialNumber, CancellationToken cancellationToken)
+        public async Task<List<FirebaseEnergyProduction>> GetAllEnergyProductions(string serialNumber, CancellationToken cancellationToken)
         {
-            var energyProductions = new List<EnergyProduction>();
+            var energyProductions = new List<FirebaseEnergyProduction>();
             CollectionReference colRef = fireStoreDb.Collection(serialNumber);
             QuerySnapshot querySnapshot = await colRef.GetSnapshotAsync(cancellationToken);
             foreach (DocumentSnapshot document in querySnapshot.Documents)
             {
-                EnergyProduction energyProduction = document.ConvertTo<EnergyProduction>();
+                FirebaseEnergyProduction energyProduction = document.ConvertTo<FirebaseEnergyProduction>();
                 energyProductions.Add(energyProduction);
             }
             return energyProductions;
         }
 
-        public async Task<List<EnergyProduction>> GetAllEnergyProductionsFromToday(string serialNumber, CancellationToken cancellationToken)
+        public async Task<List<FirebaseEnergyProduction>> GetAllEnergyProductionsFromToday(string serialNumber, CancellationToken cancellationToken)
         {
-            var energyProductions = new List<EnergyProduction>();
+            var energyProductions = new List<FirebaseEnergyProduction>();
             var date = DateTime.SpecifyKind(DateTime.Today, DateTimeKind.Utc);
             var timestamp = Timestamp.FromDateTime(date);
             CollectionReference colRef = fireStoreDb.Collection(serialNumber);
@@ -73,7 +73,7 @@ namespace Backend.DataAccess
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync(cancellationToken);
             foreach (DocumentSnapshot document in querySnapshot.Documents)
             {
-                EnergyProduction energyProduction = document.ConvertTo<EnergyProduction>();
+                FirebaseEnergyProduction energyProduction = document.ConvertTo<FirebaseEnergyProduction>();
                 energyProductions.Add(energyProduction);
             }
             return energyProductions;

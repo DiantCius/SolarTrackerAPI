@@ -1,5 +1,7 @@
 ﻿using Backend.DataAccess;
+using Backend.DTO;
 using Backend.DTO.Requests;
+using Backend.DTO.Responses;
 using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +19,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("add")]
-        public async Task AddProduction([FromBody] EnergyProduction energyProduction, CancellationToken cancellationToken)
+        public async Task AddProduction([FromBody] EnergyProductionDto energyProduction, CancellationToken cancellationToken)
         {
             await energyProductionHandler.AddEnergyProduction(energyProduction, cancellationToken);
         }
@@ -28,14 +30,14 @@ namespace Backend.Controllers
             await energyProductionHandler.AddEnergyProductions(addEnergyProductionsRequest, cancellationToken);
         }
         [HttpGet("all")]
-        public async Task<List<EnergyProduction>> GetAllProductions(string serialNumber, CancellationToken cancellationToken)
+        public async Task<EnergyProductionsResponse> GetAllProductions(string serialNumber, CancellationToken cancellationToken)
         {
             var response =  await energyProductionHandler.GetAllEnergyProductions(serialNumber, cancellationToken);
             return response;
         }
 
         [HttpGet("today")]
-        public async Task<List<EnergyProduction>> GetEnergyProductionsFromToday(string serialNumber, CancellationToken cancellationToken)
+        public async Task<EnergyProductionsResponse> GetEnergyProductionsFromToday(string serialNumber, CancellationToken cancellationToken)
         {
             var response = await energyProductionHandler.GetAllEnergyProductionsFromToday(serialNumber, cancellationToken);
             return response;

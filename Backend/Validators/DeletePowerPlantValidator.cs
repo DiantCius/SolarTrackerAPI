@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace Backend.Validators
 {
-    public class DeletePowerPlantValidator : AbstractValidator<DeletePowerPlantRequest>
+    public class DeletePowerplantValidator : AbstractValidator<DeletePowerplantRequest>
     {
-        public DeletePowerPlantValidator()
+        public DeletePowerplantValidator()
         {
             RuleFor(x => x.SerialNumber).NotNull().NotEmpty();
         }

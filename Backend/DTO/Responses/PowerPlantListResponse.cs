@@ -2,6 +2,6 @@
 
 namespace Backend.DTO.Responses
 {
-    public record PowerPlantListResponse(List<PowerPlant> PowerPlants);
+    public record PowerplantListResponse(List<Powerplant> Powerplants);
 
 }

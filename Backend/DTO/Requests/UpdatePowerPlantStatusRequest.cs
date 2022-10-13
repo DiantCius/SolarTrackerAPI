@@ -2,5 +2,5 @@
 
 namespace Backend.DTO.Requests
 {
-    public record UpdatePowerPlantStatusRequest(string SerialNumber, ConnectionStatus ConnectionStatus);
+    public record UpdatePowerplantStatusRequest(string SerialNumber, ConnectionStatus ConnectionStatus);
 }

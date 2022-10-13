@@ -41,9 +41,9 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
-var defaultConnectionString = string.Empty;
+//var defaultConnectionString = string.Empty;
 
-if (builder.Environment.EnvironmentName == "Development")
+/*if (builder.Environment.EnvironmentName == "Development")
 {
     defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 }
@@ -62,13 +62,13 @@ else
     var database = hostSide.Split("/")[1].Split("?")[0];
 
     defaultConnectionString = $"Host={host};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
-}
+}*/
 
-//var defaultConnectionString = builder.Configuration.GetConnectionString("Default");
-builder.Services.AddDbContext<ApplicationContext>(options =>
-   options.UseNpgsql(defaultConnectionString));
+var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<ApplicationContext>(options => 
+    options.UseSqlServer(defaultConnectionString));
 
-var serviceProvider = builder.Services.BuildServiceProvider();
+/*var serviceProvider = builder.Services.BuildServiceProvider();
 try
 {
     var dbContext = serviceProvider.GetRequiredService<ApplicationContext>();
@@ -76,7 +76,7 @@ try
 }
 catch
 {
-}
+}*/
 
 
 var issuer = "Issuer";
@@ -96,7 +96,7 @@ builder.Services.AddScoped<JwtGenerator>();
 builder.Services.AddScoped<AuthHandler>();
 builder.Services.AddScoped<FirebaseRepository>();
 builder.Services.AddScoped<IndicationService>();
-builder.Services.AddScoped<PowerPlantsHandler>();
+builder.Services.AddScoped<PowerplantsHandler>();
 builder.Services.AddScoped<EnergyProductionHandler>();
 builder.Services.AddSingleton<HttpContextAccessor>();
 builder.Services.AddScoped<CurrentUser>();

@@ -7,6 +7,6 @@
         public string Username { get; set; }
         public UserRole Role { get; set; }
         public string HashedPassword { get; set; }
-        public List<PowerPlant> PowerPlants { get; set; }
+        public List<Powerplant> Powerplants { get; set; }
     }
 }

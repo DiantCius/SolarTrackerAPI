@@ -10,8 +10,9 @@ namespace Backend.DataAccess
         }
 
         public DbSet<User> Users { get; set; }
-        public DbSet<PowerPlant> PowerPlants { get; set; }
+        public DbSet<Powerplant> Powerplants { get; set; }
         public DbSet<Code> Codes { get; set; }
+        public DbSet<EnergyProduction> EnergyProductions { get; set; }
 
     }
 }

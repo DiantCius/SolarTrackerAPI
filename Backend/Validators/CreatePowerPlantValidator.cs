@@ -3,14 +3,14 @@ using FluentValidation;
 
 namespace Backend.Validators
 {
-    public class CreatePowerPlantValidator : AbstractValidator<CreatePowerPlantRequest>
+    public class CreatePowerplantValidator : AbstractValidator<CreatePowerplantRequest>
     {
-        public CreatePowerPlantValidator()
+        public CreatePowerplantValidator()
         {
             RuleFor(x => x.Name).NotNull().NotEmpty();
             RuleFor(x => x.Location).NotNull().NotEmpty();
             RuleFor(x => x.SerialNumber).NotNull().NotEmpty();
-            RuleFor(x => x.PowerPlantType).IsInEnum();
+            RuleFor(x => x.PowerplantType).IsInEnum();
         }
     }
 }

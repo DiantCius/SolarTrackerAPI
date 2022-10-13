@@ -17,7 +17,7 @@ namespace Backend.Services
 
         public async Task UpdateSolarTrackerIndication(SolarTrackerIndication solarTrackerIndication, CancellationToken cancellationToken)
         {
-            var powerPlantToUpdate = await _applicationContext.PowerPlants.FirstAsync(x => x.SerialNumber == solarTrackerIndication.SerialNumber, cancellationToken);
+            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstAsync(x => x.SerialNumber == solarTrackerIndication.SerialNumber, cancellationToken);
 
             if (powerPlantToUpdate == null)
             {

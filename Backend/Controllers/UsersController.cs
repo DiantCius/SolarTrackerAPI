@@ -26,7 +26,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("firebasetest")]
-        public async Task TestFirebase([FromBody] EnergyProduction energyProduction, CancellationToken cancellationToken)
+        public async Task TestFirebase([FromBody] FirebaseEnergyProduction energyProduction, CancellationToken cancellationToken)
         {
             await firebaseRepository.AddEnergyProduction(energyProduction, cancellationToken);
         }

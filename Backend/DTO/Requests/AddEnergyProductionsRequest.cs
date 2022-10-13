@@ -2,5 +2,5 @@
 
 namespace Backend.DTO.Requests
 {
-    public record AddEnergyProductionsRequest(string SerialNumber, List<EnergyProduction> EnergyProductions);
+    public record AddEnergyProductionsRequest(string SerialNumber, List<FirebaseEnergyProduction> EnergyProductions);
 }

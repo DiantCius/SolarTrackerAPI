@@ -30,7 +30,7 @@ namespace Backend.Services
                 CurrentProduction = energyProduction.CurrentProduction,
                 DailyProduction = energyProduction.DailyProduction,
                 CurrentTime = energyProduction.CurrentTime,
-                SerialNumber = energyProduction.SerialNumber,
+                SerialNumber = energyProduction.SerialNumber,       
             };
 
             await _applicationContext.EnergyProductions.AddAsync(newEnergyProduction, cancellationToken);

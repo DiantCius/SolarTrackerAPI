@@ -1,8 +1,12 @@
 ﻿using Backend.DataAccess;
+using Backend.DTO;
+using Backend.DTO.Requests;
 using Backend.Errors;
 using Backend.Models;
+using Google.Api;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using System.Threading;
 
 namespace Backend.Services
 {
@@ -15,43 +19,73 @@ namespace Backend.Services
             _applicationContext = applicationContext;
         }
 
-        public async Task UpdateSolarTrackerIndication(SolarTrackerIndication solarTrackerIndication, CancellationToken cancellationToken)
+
+        public async Task<IndicationDto> UpdateOrAddIndication(IndicationDto indicationDto, CancellationToken cancellationToken)
         {
-            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstAsync(x => x.SerialNumber == solarTrackerIndication.SerialNumber, cancellationToken);
+            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstAsync(x => x.SerialNumber == indicationDto.SerialNumber, cancellationToken);
 
             if (powerPlantToUpdate == null)
             {
-                throw new ApiException($"Powerplant with serial number: {solarTrackerIndication.SerialNumber} not found ", HttpStatusCode.NotFound);
+                throw new ApiException($"Powerplant with serial number: {indicationDto.SerialNumber} not found ", HttpStatusCode.NotFound);
             }
 
-            if(powerPlantToUpdate.ConnectionStatus == ConnectionStatus.Disconnected)
+            if (powerPlantToUpdate.ConnectionStatus == ConnectionStatus.Disconnected)
             {
-                throw new ApiException($"Powerplant with serial number: {solarTrackerIndication.SerialNumber} is not connected ", HttpStatusCode.BadRequest);
+                throw new ApiException($"Powerplant with serial number: {indicationDto.SerialNumber} is not connected ", HttpStatusCode.BadRequest);
             }
 
-            if(Indications.GetSolarTrackerIndication(solarTrackerIndication.SerialNumber) == null && powerPlantToUpdate.ConnectionStatus == ConnectionStatus.Connected)
+            var newIndication = new Indication()
             {
-                AddSolarTrackerIndication(solarTrackerIndication);
+                SerialNumber = indicationDto.SerialNumber,
+                Azimuth = indicationDto.Azimuth,
+                Elevation = indicationDto.Elevation,
+                WindSpeed = indicationDto.WindSpeed,
+                State = indicationDto.State,
+                Powerplant = powerPlantToUpdate,
+                PowerplantId = powerPlantToUpdate.PowerplantId,
+            };
+
+            if(await _applicationContext.Indications.Where(x => x.SerialNumber == indicationDto.SerialNumber).AnyAsync(cancellationToken))
+            {
+                var indication = await _applicationContext.Indications.FirstAsync(x => x.SerialNumber == indicationDto.SerialNumber, cancellationToken);
+                indication.Azimuth = indicationDto.Azimuth;
+                indication.Elevation = indicationDto.Elevation;
+                indication.WindSpeed = indicationDto.WindSpeed;
+                indication.State = indicationDto.State;
             }
+            else
+            {
+                await _applicationContext.Indications.AddAsync(newIndication, cancellationToken);
+            }
+            powerPlantToUpdate.Indication = newIndication;
 
-            Indications.UpdateTrackerIndication(solarTrackerIndication);
-            
+            await _applicationContext.SaveChangesAsync(cancellationToken);
 
+            return new IndicationDto(powerPlantToUpdate.SerialNumber, newIndication.Azimuth, newIndication.Elevation, newIndication.WindSpeed, newIndication.State);
         }
 
-        public SolarTrackerIndication GetSolarTrackerIndication(string serialNumber)
+        public async Task<IndicationDto> GetIndication(string serialNumber, CancellationToken cancellationToken)
         {
-            var solarTrackerIndication =  Indications.solarTrackerIndications.Where(x => x.SerialNumber == serialNumber).FirstOrDefault();
-            if (solarTrackerIndication == null)
+            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstAsync(x => x.SerialNumber == serialNumber, cancellationToken);
+
+            if (powerPlantToUpdate == null)
             {
-                throw new ApiException($"Indication with serial number: {serialNumber} not found ", HttpStatusCode.NotFound);
+                throw new ApiException($"Powerplant with serial number: {serialNumber} not found ", HttpStatusCode.NotFound);
             }
-            return solarTrackerIndication;
+
+            if (powerPlantToUpdate.ConnectionStatus == ConnectionStatus.Disconnected)
+            {
+                throw new ApiException($"Powerplant with serial number: {serialNumber} is not connected ", HttpStatusCode.BadRequest);
+            }
+
+            var indication = await _applicationContext.Indications.FirstAsync(x => x.SerialNumber == serialNumber, cancellationToken);
+
+            return new IndicationDto(indication.SerialNumber, indication.Azimuth, indication.Elevation, indication.WindSpeed, indication.State);
         }
 
-        public static void AddSolarTrackerIndication(SolarTrackerIndication solarTrackerIndication)
-        {
-            Indications.AddSolarTrackerIndication(solarTrackerIndication);
-        }
     }
+
+        
+
+        
 }

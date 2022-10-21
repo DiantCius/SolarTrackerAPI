@@ -1,9 +1,11 @@
-﻿using Backend.Models;
+﻿using Backend.DTO;
+using Backend.Models;
 using Backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
 {
+    [Route("[controller]")]
     public class IndicationsController : ControllerBase
     {
         private readonly IndicationService _indicationService;
@@ -14,15 +16,15 @@ namespace Backend.Controllers
         }
 
         [HttpPost("update")]
-        public async Task UpdateIndication([FromBody] SolarTrackerIndication solarTrackerIndication, CancellationToken cancellationToken)
+        public async Task UpdateOrAddIndication([FromBody] IndicationDto solarTrackerIndication, CancellationToken cancellationToken)
         {
-            await _indicationService.UpdateSolarTrackerIndication(solarTrackerIndication, cancellationToken);
+            await _indicationService.UpdateOrAddIndication(solarTrackerIndication, cancellationToken);
         }
 
         [HttpGet("read")]
-        public SolarTrackerIndication GetIndication(string serialNumber)
+        public async Task<IndicationDto> GetIndication(string serialNumber, CancellationToken cancellationToken)
         {
-            var response = _indicationService.GetSolarTrackerIndication(serialNumber);
+            var response = await _indicationService.GetIndication(serialNumber, cancellationToken);
             return response;
         }
     }

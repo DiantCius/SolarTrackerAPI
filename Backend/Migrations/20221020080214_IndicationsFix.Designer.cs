@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20221013073426_First")]
-    partial class First
+    [Migration("20221020080214_IndicationsFix")]
+    partial class IndicationsFix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -71,6 +71,37 @@ namespace Backend.Migrations
                     b.HasIndex("PowerplantId");
 
                     b.ToTable("EnergyProductions");
+                });
+
+            modelBuilder.Entity("Backend.Models.Indication", b =>
+                {
+                    b.Property<int>("IndicationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IndicationId"), 1L, 1);
+
+                    b.Property<float>("Azimuth")
+                        .HasColumnType("real");
+
+                    b.Property<float>("Elevation")
+                        .HasColumnType("real");
+
+                    b.Property<int>("PowerplantId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("State")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("WindSpeed")
+                        .HasColumnType("real");
+
+                    b.HasKey("IndicationId");
+
+                    b.HasIndex("PowerplantId")
+                        .IsUnique();
+
+                    b.ToTable("Indication");
                 });
 
             modelBuilder.Entity("Backend.Models.Powerplant", b =>
@@ -142,6 +173,17 @@ namespace Backend.Migrations
                     b.Navigation("Powerplant");
                 });
 
+            modelBuilder.Entity("Backend.Models.Indication", b =>
+                {
+                    b.HasOne("Backend.Models.Powerplant", "Powerplant")
+                        .WithOne("Indication")
+                        .HasForeignKey("Backend.Models.Indication", "PowerplantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Powerplant");
+                });
+
             modelBuilder.Entity("Backend.Models.Powerplant", b =>
                 {
                     b.HasOne("Backend.Models.User", "User")
@@ -156,6 +198,8 @@ namespace Backend.Migrations
             modelBuilder.Entity("Backend.Models.Powerplant", b =>
                 {
                     b.Navigation("EnergyProductions");
+
+                    b.Navigation("Indication");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>

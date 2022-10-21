@@ -12,14 +12,12 @@ namespace Backend.Services
     {
         private readonly ApplicationContext _context;
         private readonly CurrentUser _currentUser;
-        private readonly IndicationService _indicationService;
         private readonly FirebaseRepository _firebaseRepository;
 
-        public PowerplantsHandler(ApplicationContext context,  CurrentUser currentUser, IndicationService indicationService, FirebaseRepository firebaseRepository)
+        public PowerplantsHandler(ApplicationContext context,  CurrentUser currentUser, FirebaseRepository firebaseRepository)
         {
             _context = context;
             _currentUser = currentUser;
-            _indicationService = indicationService;
             _firebaseRepository = firebaseRepository;
         }
 
@@ -45,8 +43,8 @@ namespace Backend.Services
 
             await _context.Powerplants.AddAsync(newPowerplant, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
-            int[] state =  { 0, 0, 0 };
-            Indications.AddSolarTrackerIndication(new SolarTrackerIndication { SerialNumber = newPowerplant.SerialNumber, Azimuth = 0F, Elevation = 0F, WindSpeed = 0F, State = state });
+            //int[] state =  { 0, 0, 0 };
+            //Indications.AddSolarTrackerIndication(new SolarTrackerIndication { SerialNumber = newPowerplant.SerialNumber, Azimuth = 0F, Elevation = 0F, WindSpeed = 0F, State = state });
 
             return new CreatePowerplantResponse(newPowerplant.Name,newPowerplant.Location, newPowerplant.PowerplantType, newPowerplant.SerialNumber, newPowerplant.ConnectionStatus);
         }

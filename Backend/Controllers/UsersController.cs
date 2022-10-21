@@ -25,6 +25,13 @@ namespace Backend.Controllers
             return Ok("dla admina");
         }
 
+        [HttpGet("test")]
+        public ActionResult GetAllTest()
+        {
+            return Ok("test");
+        }
+
+
         [HttpPost("firebasetest")]
         public async Task TestFirebase([FromBody] FirebaseEnergyProduction energyProduction, CancellationToken cancellationToken)
         {

@@ -15,11 +15,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var configurationBuilder = new ConfigurationBuilder()
-                            .SetBasePath(builder.Environment.ContentRootPath)
-                            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-                            .AddEnvironmentVariables();
+var configurationBuilder = new ConfigurationBuilder();
 
 builder.Configuration.AddConfiguration(configurationBuilder.Build());
 
@@ -64,7 +60,7 @@ else
     defaultConnectionString = $"Host={host};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
 }*/
 
-var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var defaultConnectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
 builder.Services.AddDbContext<ApplicationContext>(options => 
     options.UseSqlServer(defaultConnectionString));
 
@@ -160,7 +156,7 @@ var app = builder.Build();
 
 app.UseMiddleware<ErrorHandlingMiddleware>();
 
-//app.UseHttpsRedirection();
+app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

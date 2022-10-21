@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Backend.Migrations
 {
-    public partial class First : Migration
+    public partial class IndicationsFix : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -86,10 +86,39 @@ namespace Backend.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Indication",
+                columns: table => new
+                {
+                    IndicationId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Azimuth = table.Column<float>(type: "real", nullable: false),
+                    Elevation = table.Column<float>(type: "real", nullable: false),
+                    WindSpeed = table.Column<float>(type: "real", nullable: false),
+                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PowerplantId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Indication", x => x.IndicationId);
+                    table.ForeignKey(
+                        name: "FK_Indication_Powerplants_PowerplantId",
+                        column: x => x.PowerplantId,
+                        principalTable: "Powerplants",
+                        principalColumn: "PowerplantId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_EnergyProductions_PowerplantId",
                 table: "EnergyProductions",
                 column: "PowerplantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Indication_PowerplantId",
+                table: "Indication",
+                column: "PowerplantId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Powerplants_UserId",
@@ -104,6 +133,9 @@ namespace Backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "EnergyProductions");
+
+            migrationBuilder.DropTable(
+                name: "Indication");
 
             migrationBuilder.DropTable(
                 name: "Powerplants");

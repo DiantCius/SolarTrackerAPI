@@ -11,7 +11,10 @@ namespace Backend.Models
         public PowerplantType PowerplantType { get; set; }
         public string SerialNumber { get; set; }
         public ConnectionStatus ConnectionStatus { get; set; }
+        [JsonIgnore]
         public List<EnergyProduction> EnergyProductions { get; set; }
+        [JsonIgnore]
+        public Indication Indication { get; set; }
         [JsonIgnore]
         public int UserId { get; set; }
         [JsonIgnore]

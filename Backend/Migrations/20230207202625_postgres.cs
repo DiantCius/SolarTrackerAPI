@@ -1,11 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace Backend.Migrations
 {
-    public partial class IndicationsFix : Migration
+    public partial class postgres : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,10 +14,10 @@ namespace Backend.Migrations
                 name: "Codes",
                 columns: table => new
                 {
-                    CodeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SerialNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    IsUsed = table.Column<bool>(type: "bit", nullable: false)
+                    CodeId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SerialNumber = table.Column<string>(type: "text", nullable: true),
+                    IsUsed = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -27,12 +28,12 @@ namespace Backend.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Role = table.Column<int>(type: "int", nullable: false),
-                    HashedPassword = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Email = table.Column<string>(type: "text", nullable: true),
+                    Username = table.Column<string>(type: "text", nullable: true),
+                    Role = table.Column<int>(type: "integer", nullable: false),
+                    HashedPassword = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,14 +44,14 @@ namespace Backend.Migrations
                 name: "Powerplants",
                 columns: table => new
                 {
-                    PowerplantId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PowerplantType = table.Column<int>(type: "int", nullable: false),
-                    SerialNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConnectionStatus = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false)
+                    PowerplantId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Location = table.Column<string>(type: "text", nullable: true),
+                    PowerplantType = table.Column<int>(type: "integer", nullable: false),
+                    SerialNumber = table.Column<string>(type: "text", nullable: true),
+                    ConnectionStatus = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,13 +68,13 @@ namespace Backend.Migrations
                 name: "EnergyProductions",
                 columns: table => new
                 {
-                    EnergyProductionId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CurrentProduction = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    DailyProduction = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    CurrentTime = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SerialNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PowerplantId = table.Column<int>(type: "int", nullable: false)
+                    EnergyProductionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CurrentProduction = table.Column<string>(type: "text", nullable: true),
+                    DailyProduction = table.Column<string>(type: "text", nullable: true),
+                    CurrentTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    SerialNumber = table.Column<string>(type: "text", nullable: true),
+                    PowerplantId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -87,22 +88,23 @@ namespace Backend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Indication",
+                name: "Indications",
                 columns: table => new
                 {
-                    IndicationId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IndicationId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SerialNumber = table.Column<string>(type: "text", nullable: true),
                     Azimuth = table.Column<float>(type: "real", nullable: false),
                     Elevation = table.Column<float>(type: "real", nullable: false),
                     WindSpeed = table.Column<float>(type: "real", nullable: false),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PowerplantId = table.Column<int>(type: "int", nullable: false)
+                    State = table.Column<string>(type: "text", nullable: true),
+                    PowerplantId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Indication", x => x.IndicationId);
+                    table.PrimaryKey("PK_Indications", x => x.IndicationId);
                     table.ForeignKey(
-                        name: "FK_Indication_Powerplants_PowerplantId",
+                        name: "FK_Indications_Powerplants_PowerplantId",
                         column: x => x.PowerplantId,
                         principalTable: "Powerplants",
                         principalColumn: "PowerplantId",
@@ -115,8 +117,8 @@ namespace Backend.Migrations
                 column: "PowerplantId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Indication_PowerplantId",
-                table: "Indication",
+                name: "IX_Indications_PowerplantId",
+                table: "Indications",
                 column: "PowerplantId",
                 unique: true);
 
@@ -135,7 +137,7 @@ namespace Backend.Migrations
                 name: "EnergyProductions");
 
             migrationBuilder.DropTable(
-                name: "Indication");
+                name: "Indications");
 
             migrationBuilder.DropTable(
                 name: "Powerplants");

@@ -3,7 +3,6 @@ using Backend.DTO;
 using Backend.DTO.Requests;
 using Backend.Errors;
 using Backend.Models;
-using Google.Api;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Threading;

@@ -12,13 +12,11 @@ namespace Backend.Services
     {
         private readonly ApplicationContext _context;
         private readonly CurrentUser _currentUser;
-        private readonly FirebaseRepository _firebaseRepository;
 
-        public PowerplantsHandler(ApplicationContext context,  CurrentUser currentUser, FirebaseRepository firebaseRepository)
+        public PowerplantsHandler(ApplicationContext context,  CurrentUser currentUser)
         {
             _context = context;
             _currentUser = currentUser;
-            _firebaseRepository = firebaseRepository;
         }
 
         public async Task<CreatePowerplantResponse> CreatePowerPlantAsync(CreatePowerplantRequest createPowerplantRequest, CancellationToken cancellationToken)
@@ -33,7 +31,6 @@ namespace Backend.Services
             var newPowerplant = new Powerplant()
             {
                 Name = createPowerplantRequest.Name,
-                Location = createPowerplantRequest.Location,
                 PowerplantType = createPowerplantRequest.PowerplantType,
                 ConnectionStatus = ConnectionStatus.Disconnected,
                 SerialNumber = createPowerplantRequest.SerialNumber,
@@ -61,7 +58,6 @@ namespace Backend.Services
             _context.Powerplants.Remove(powerplantToDelete);
             await _context.SaveChangesAsync(cancellationToken);
 
-            await _firebaseRepository.DeleteCollection(serialNumber, 10);
             return new DeletePowerplantResponse(powerplantToDelete.Name, powerplantToDelete.Location, powerplantToDelete.PowerplantType, powerplantToDelete.SerialNumber, powerplantToDelete.ConnectionStatus);
         }
 

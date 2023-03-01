@@ -35,44 +35,11 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddCors();
 
-//var defaultConnectionString = string.Empty;
-
-/*if (builder.Environment.EnvironmentName == "Development")
-{
-    defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-}
-else
-{
-    // Use connection string provided at runtime by Heroku.
-    var connectionUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-
-    connectionUrl = connectionUrl.Replace("postgres://", string.Empty);
-    var userPassSide = connectionUrl.Split("@")[0];
-    var hostSide = connectionUrl.Split("@")[1];
-
-    var user = userPassSide.Split(":")[0];
-    var password = userPassSide.Split(":")[1];
-    var host = hostSide.Split("/")[0];
-    var database = hostSide.Split("/")[1].Split("?")[0];
-
-    defaultConnectionString = $"Host={host};Database={database};Username={user};Password={password};SSL Mode=Require;Trust Server Certificate=true";
-}*/
-
-var defaultConnectionString = builder.Configuration.GetConnectionString("AZURE_SQL_CONNECTIONSTRING");
+var defaultConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationContext>(options => 
-    options.UseSqlServer(defaultConnectionString));
-
-/*var serviceProvider = builder.Services.BuildServiceProvider();
-try
-{
-    var dbContext = serviceProvider.GetRequiredService<ApplicationContext>();
-    dbContext.Database.Migrate();
-}
-catch
-{
-}*/
+    options.UseNpgsql(defaultConnectionString));
 
 
 var issuer = "Issuer";
@@ -90,7 +57,6 @@ var jwtOptions = new JwtOptions()
 builder.Services.AddSingleton(jwtOptions);
 builder.Services.AddScoped<JwtGenerator>();
 builder.Services.AddScoped<AuthHandler>();
-builder.Services.AddScoped<FirebaseRepository>();
 builder.Services.AddScoped<IndicationService>();
 builder.Services.AddScoped<PowerplantsHandler>();
 builder.Services.AddScoped<EnergyProductionHandler>();
@@ -145,6 +111,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -159,6 +126,14 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
+
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin()
+           .AllowAnyMethod()
+           .AllowAnyHeader();
+});
+
 
 app.UseAuthorization();
 

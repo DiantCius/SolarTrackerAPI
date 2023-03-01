@@ -10,12 +10,7 @@ namespace Backend.Controllers
     [Route("[controller]")]
     public class UsersController : ControllerBase
     {
-        private readonly FirebaseRepository firebaseRepository;
 
-        public UsersController(FirebaseRepository firebaseRepository)
-        {
-            this.firebaseRepository = firebaseRepository;
-        }
 
         [HttpGet("all")]
         [Authorize(Roles = "Admin")]
@@ -31,17 +26,5 @@ namespace Backend.Controllers
             return Ok("test");
         }
 
-
-        [HttpPost("firebasetest")]
-        public async Task TestFirebase([FromBody] FirebaseEnergyProduction energyProduction, CancellationToken cancellationToken)
-        {
-            await firebaseRepository.AddEnergyProduction(energyProduction, cancellationToken);
-        }
-
-        [HttpPost("multiaddenergy")]
-        public async Task AddMultiple([FromBody] AddEnergyProductionsRequest addEnergyProductionsRequest, CancellationToken cancellationToken)
-        {
-            await firebaseRepository.AddEnergyProductions(addEnergyProductionsRequest, cancellationToken);    
-        }
     }
 }

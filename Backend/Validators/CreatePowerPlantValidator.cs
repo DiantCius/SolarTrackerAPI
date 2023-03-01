@@ -8,7 +8,6 @@ namespace Backend.Validators
         public CreatePowerplantValidator()
         {
             RuleFor(x => x.Name).NotNull().NotEmpty();
-            RuleFor(x => x.Location).NotNull().NotEmpty();
             RuleFor(x => x.SerialNumber).NotNull().NotEmpty();
             RuleFor(x => x.PowerplantType).IsInEnum();
         }

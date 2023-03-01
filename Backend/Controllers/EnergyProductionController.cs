@@ -24,11 +24,6 @@ namespace Backend.Controllers
             await energyProductionHandler.AddEnergyProduction(energyProduction, cancellationToken);
         }
 
-        [HttpPost("addmultiple")]
-        public async Task AddMultipleProductions([FromBody] AddEnergyProductionsRequest addEnergyProductionsRequest, CancellationToken cancellationToken)
-        {
-            await energyProductionHandler.AddEnergyProductions(addEnergyProductionsRequest, cancellationToken);
-        }
         [HttpGet("all")]
         public async Task<EnergyProductionsResponse> GetAllProductions(string serialNumber, CancellationToken cancellationToken)
         {

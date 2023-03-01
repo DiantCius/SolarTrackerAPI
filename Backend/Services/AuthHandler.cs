@@ -22,14 +22,19 @@ namespace Backend.Services
 
         public async Task<RegisterResponse> RegisterAsync(RegisterRequest registerRequest, CancellationToken cancellationToken)
         {
-            if (await _context.Users.Where(x => x.Username == registerRequest.Username).AnyAsync(cancellationToken))
+            if (await _context.Users.Where(x => x.Email == registerRequest.Email).AnyAsync(cancellationToken))
             {
-                throw new ApiException($"User with username: {registerRequest.Username}  already exists", HttpStatusCode.BadRequest);
+                throw new ApiException($"User with this email already exists", HttpStatusCode.BadRequest);
             }
 
             if (await _context.Users.Where(x => x.Email == registerRequest.Email).AnyAsync(cancellationToken))
             {
                 throw new ApiException($"User with username: {registerRequest.Email}  already exists", HttpStatusCode.BadRequest);
+            }
+
+            if(registerRequest.Password != registerRequest.ConfirmPassword)
+            {
+                throw new ApiException($"Both passwords must be the same", HttpStatusCode.BadRequest);
             }
 
             var userRole = UserRole.User;

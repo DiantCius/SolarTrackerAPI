@@ -128,7 +128,7 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<int>("PowerplantGroupId")
+                    b.Property<int?>("PowerplantGroupId")
                         .HasColumnType("integer");
 
                     b.Property<int>("PowerplantType")
@@ -163,7 +163,12 @@ namespace Backend.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("PowerplantGroupId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("PowerplantGroups");
                 });
@@ -219,9 +224,7 @@ namespace Backend.Migrations
                 {
                     b.HasOne("Backend.Models.PowerplantGroup", "PowerplantGroup")
                         .WithMany("Powerplants")
-                        .HasForeignKey("PowerplantGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PowerplantGroupId");
 
                     b.HasOne("Backend.Models.User", "User")
                         .WithMany("Powerplants")
@@ -230,6 +233,15 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("PowerplantGroup");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Models.PowerplantGroup", b =>
+                {
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany("PowerplantGroups")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -248,6 +260,8 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
+                    b.Navigation("PowerplantGroups");
+
                     b.Navigation("Powerplants");
                 });
 #pragma warning restore 612, 618

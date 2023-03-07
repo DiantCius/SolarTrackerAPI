@@ -23,7 +23,7 @@ namespace Backend.Models
         [JsonIgnore]
         public User User { get; set; }
         [JsonIgnore]
-        public int PowerplantGroupId { get; set; }
+        public int? PowerplantGroupId { get; set; }
         [JsonIgnore]
         public PowerplantGroup PowerplantGroup { get; set; }
 

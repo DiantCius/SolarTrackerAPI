@@ -8,5 +8,7 @@
         public UserRole Role { get; set; }
         public string HashedPassword { get; set; }
         public List<Powerplant> Powerplants { get; set; }
+        public List<PowerplantGroup> PowerplantGroups { get; set; }
+
     }
 }

@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230207202625_postgres")]
-    partial class postgres
+    [Migration("20230307174843_GroupsFix")]
+    partial class GroupsFix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -115,14 +115,23 @@ namespace Backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PowerplantId"));
 
+                    b.Property<string>("City")
+                        .HasColumnType("text");
+
                     b.Property<int>("ConnectionStatus")
                         .HasColumnType("integer");
 
-                    b.Property<string>("Location")
-                        .HasColumnType("text");
+                    b.Property<double>("Latitude")
+                        .HasColumnType("double precision");
+
+                    b.Property<double>("Longitude")
+                        .HasColumnType("double precision");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
+
+                    b.Property<int?>("PowerplantGroupId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("PowerplantType")
                         .HasColumnType("integer");
@@ -130,14 +139,40 @@ namespace Backend.Migrations
                     b.Property<string>("SerialNumber")
                         .HasColumnType("text");
 
+                    b.Property<string>("Tariff")
+                        .HasColumnType("text");
+
                     b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.HasKey("PowerplantId");
 
+                    b.HasIndex("PowerplantGroupId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Powerplants");
+                });
+
+            modelBuilder.Entity("Backend.Models.PowerplantGroup", b =>
+                {
+                    b.Property<int>("PowerplantGroupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("PowerplantGroupId"));
+
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PowerplantGroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PowerplantGroups");
                 });
 
             modelBuilder.Entity("Backend.Models.User", b =>
@@ -189,11 +224,26 @@ namespace Backend.Migrations
 
             modelBuilder.Entity("Backend.Models.Powerplant", b =>
                 {
+                    b.HasOne("Backend.Models.PowerplantGroup", "PowerplantGroup")
+                        .WithMany("Powerplants")
+                        .HasForeignKey("PowerplantGroupId");
+
                     b.HasOne("Backend.Models.User", "User")
                         .WithMany("Powerplants")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("PowerplantGroup");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Backend.Models.PowerplantGroup", b =>
+                {
+                    b.HasOne("Backend.Models.User", "User")
+                        .WithMany("PowerplantGroups")
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -205,8 +255,15 @@ namespace Backend.Migrations
                     b.Navigation("Indication");
                 });
 
+            modelBuilder.Entity("Backend.Models.PowerplantGroup", b =>
+                {
+                    b.Navigation("Powerplants");
+                });
+
             modelBuilder.Entity("Backend.Models.User", b =>
                 {
+                    b.Navigation("PowerplantGroups");
+
                     b.Navigation("Powerplants");
                 });
 #pragma warning restore 612, 618

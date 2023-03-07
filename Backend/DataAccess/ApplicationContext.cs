@@ -16,6 +16,7 @@ namespace Backend.DataAccess
         public DbSet<Code> Codes { get; set; }
         public DbSet<EnergyProduction> EnergyProductions { get; set; }
         public DbSet<Indication> Indications { get; set; }
+        public DbSet<PowerplantGroup> PowerplantGroups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -34,6 +34,10 @@ namespace Backend.Services
                 PowerplantType = createPowerplantRequest.PowerplantType,
                 ConnectionStatus = ConnectionStatus.Disconnected,
                 SerialNumber = createPowerplantRequest.SerialNumber,
+                Tariff= createPowerplantRequest.Tariff,
+                City= createPowerplantRequest.City,
+                Latitude= createPowerplantRequest.Latitude,
+                Longitude = createPowerplantRequest.Longitude,
                 User = user,
                 UserId = user.UserId
             };
@@ -43,7 +47,7 @@ namespace Backend.Services
             //int[] state =  { 0, 0, 0 };
             //Indications.AddSolarTrackerIndication(new SolarTrackerIndication { SerialNumber = newPowerplant.SerialNumber, Azimuth = 0F, Elevation = 0F, WindSpeed = 0F, State = state });
 
-            return new CreatePowerplantResponse(newPowerplant.Name,newPowerplant.Location, newPowerplant.PowerplantType, newPowerplant.SerialNumber, newPowerplant.ConnectionStatus);
+            return new CreatePowerplantResponse(newPowerplant.Name,newPowerplant.City, newPowerplant.Latitude, newPowerplant.Longitude, newPowerplant.Tariff, newPowerplant.PowerplantType, newPowerplant.SerialNumber, newPowerplant.ConnectionStatus);
         }
 
         public async Task<DeletePowerplantResponse> DeletePowerPlantAsync(DeletePowerplantRequest deletePowerPlantRequest, CancellationToken cancellationToken)
@@ -58,7 +62,7 @@ namespace Backend.Services
             _context.Powerplants.Remove(powerplantToDelete);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new DeletePowerplantResponse(powerplantToDelete.Name, powerplantToDelete.Location, powerplantToDelete.PowerplantType, powerplantToDelete.SerialNumber, powerplantToDelete.ConnectionStatus);
+            return new DeletePowerplantResponse(powerplantToDelete.Name, powerplantToDelete.City, powerplantToDelete.Latitude, powerplantToDelete.Longitude, powerplantToDelete.Tariff, powerplantToDelete.PowerplantType, powerplantToDelete.SerialNumber, powerplantToDelete.ConnectionStatus);
         }
 
         public async Task<PowerplantListResponse> GetAllPowerPlantsAsync(CancellationToken cancellationToken)

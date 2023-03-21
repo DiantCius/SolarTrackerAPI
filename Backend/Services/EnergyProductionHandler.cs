@@ -73,5 +73,52 @@ namespace Backend.Services
             return new EnergyProductionsResponse(energyProductions);
         }
 
+        public EnergyProduction GetDailyProduction(int day, List<EnergyProduction> productions)
+        {
+            var response = productions.Where(x => x.CurrentTime.Day == day).OrderByDescending(x => x.DailyProduction).First();
+            return response;
+        }
+
+        public async Task<long> GetTotalEnergyProductionFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
+        {
+            var production = await _applicationContext.EnergyProductions
+                .Where(x => x.SerialNumber == request.serialNumber && x.CurrentTime.Year == request.year && x.CurrentTime.Year == request.year)
+                .OrderBy(x => x.CurrentTime)
+                .ToListAsync(cancellationToken);
+            var long_sum = production.Select(e => long.Parse(e.DailyProduction));
+            var sum = long_sum.Sum();
+            return sum;
+        }
+
+        public async Task<EnergyProductionsResponse> GetDailyEnergyProductionsFromMonthAsync(MonthlyProductionsRequest request, CancellationToken cancellationToken)
+        {
+            Powerplant powerPlant = await CheckPowerplant(request.serialNumber, cancellationToken);
+
+            var monthlyProductions = await _applicationContext.EnergyProductions
+                .Where(x => x.SerialNumber == request.serialNumber && x.CurrentTime.Month == request.month && x.CurrentTime.Year == request.year)
+                .OrderBy(x => x.CurrentTime)
+                .ToListAsync(cancellationToken);
+
+            if (!monthlyProductions.Any())
+            {
+                throw new ApiException($"No energy productions for this date", HttpStatusCode.NotFound);
+            }
+
+            var days = monthlyProductions
+                .Select(x => x.CurrentTime.Day)
+                .Distinct();
+
+            List<EnergyProduction> list = new List<EnergyProduction>();
+
+            foreach (int day in days)
+            {
+                var production = GetDailyProduction(day, monthlyProductions);
+                list.Add(production);
+            }
+
+            return new EnergyProductionsResponse(list);
+        }
+
+
     }
 }

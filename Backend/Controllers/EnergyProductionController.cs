@@ -27,7 +27,14 @@ namespace Backend.Controllers
         [HttpGet("all")]
         public async Task<EnergyProductionsResponse> GetAllProductions(string serialNumber, CancellationToken cancellationToken)
         {
-            var response =  await energyProductionHandler.GetAllEnergyProductions(serialNumber, cancellationToken);
+            var response = await energyProductionHandler.GetAllEnergyProductions(serialNumber, cancellationToken);
+            return response;
+        }
+
+        [HttpGet("month/daily")]
+        public async Task<EnergyProductionsResponse> GetDailyEnergyProductionsFromMonth(MonthlyProductionsRequest request, CancellationToken cancellationToken)
+        {
+            var response = await energyProductionHandler.GetDailyEnergyProductionsFromMonthAsync(request, cancellationToken);
             return response;
         }
 
@@ -35,6 +42,14 @@ namespace Backend.Controllers
         public async Task<EnergyProductionsResponse> GetEnergyProductionsFromToday(string serialNumber, CancellationToken cancellationToken)
         {
             var response = await energyProductionHandler.GetAllEnergyProductionsFromToday(serialNumber, cancellationToken);
+            return response;
+        }
+
+        [HttpGet("year/total")]
+        public async Task<long> GetTotalEnergyProductionFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
+        {
+
+            var response = await energyProductionHandler.GetTotalEnergyProductionFromYear(request, cancellationToken);
             return response;
         }
     }

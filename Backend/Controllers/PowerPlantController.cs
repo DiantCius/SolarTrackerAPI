@@ -21,40 +21,49 @@ namespace Backend.Controllers
 
         [HttpGet("all")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<PowerplantListResponse>> GetAllPowerPlantsForUser(CancellationToken cancellationToken)
+        public async Task<ActionResult<PowerplantListResponse>> GetAllPowerplantsForUser(CancellationToken cancellationToken)
         {
-            var powerPlants = await _powerplantsHandler.GetAllPowerPlantsForUserAsync(cancellationToken);
-            return Ok(powerPlants);
+            var powerplants = await _powerplantsHandler.GetAllPowerplantsForUserAsync(cancellationToken);
+            return Ok(powerplants);
         }
-        
+
+        [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<Powerplant>> GetPowerplantById(int id, CancellationToken cancellationToken)
+        {
+            var powerplant = await _powerplantsHandler.GetPowerPlantsByIdAsync(id, cancellationToken);
+            return Ok(powerplant);
+        }
+
         [HttpGet("admin/all")]
         [Authorize(Roles = "Admin")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<PowerplantListResponse>> GetAllPowerPlants(CancellationToken cancellationToken)
+        public async Task<ActionResult<PowerplantListResponse>> GetAllPowerplants(CancellationToken cancellationToken)
         {
-            var powerPlants = await _powerplantsHandler.GetAllPowerPlantsForUserAsync(cancellationToken);
-            return Ok(powerPlants);
+            var powerplants = await _powerplantsHandler.GetAllPowerplantsForUserAsync(cancellationToken);
+            return Ok(powerplants);
         }
 
         [HttpPost("add")]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<CreatePowerplantResponse>> CreatePowerPlant([FromBody] CreatePowerplantRequest createPowerplantRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult<CreatePowerplantResponse>> CreatePowerplant([FromBody] CreatePowerplantRequest createPowerplantRequest, CancellationToken cancellationToken)
         {
             var response = await _powerplantsHandler.CreatePowerPlantAsync(createPowerplantRequest, cancellationToken);
             return Ok(response);
         }
 
         [HttpPost("status/update")]
-        public async Task<ActionResult<ConnectionStatus>> UpdatePowerPlantStatus([FromBody] UpdatePowerplantStatusRequest updatePowerplantStatusRequest, CancellationToken cancellationToken)
+        public async Task<ActionResult<ConnectionStatus>> UpdatePowerplantStatus([FromBody] UpdatePowerplantStatusRequest updatePowerplantStatusRequest, CancellationToken cancellationToken)
         {
-            var response = await _powerplantsHandler.UpdatePowerPlantStatusAsync(updatePowerplantStatusRequest, cancellationToken);
+            var response = await _powerplantsHandler.UpdatePowerplantStatusAsync(updatePowerplantStatusRequest, cancellationToken);
             return Ok(response);
         }
 
-        [HttpDelete("delete")]
-        public async Task<ActionResult<DeletePowerplantResponse>> DeletePowerPlant(DeletePowerplantRequest deletePowerplantRequest, CancellationToken cancellationToken)
+
+        [HttpDelete("delete/{id}")]
+        public async Task<ActionResult<Powerplant>> DeletePowerplant(int id, CancellationToken cancellationToken)
         {
-            var response = await _powerplantsHandler.DeletePowerPlantAsync(deletePowerplantRequest, cancellationToken);
+            var response = await _powerplantsHandler.DeletePowerplantAsync(id, cancellationToken);
             return Ok(response);
         }
     }

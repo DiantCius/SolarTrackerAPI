@@ -18,10 +18,54 @@ namespace Backend.Services
             _applicationContext = applicationContext;
         }
 
-
-        public async Task<IndicationDto> UpdateOrAddIndication(IndicationDto indicationDto, CancellationToken cancellationToken)
+        public async Task<IndicationDto> UpdateIndicationAsync(IndicationDto indicationDto, CancellationToken cancellationToken)
         {
-            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstAsync(x => x.SerialNumber == indicationDto.SerialNumber, cancellationToken);
+            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstOrDefaultAsync(x => x.SerialNumber == indicationDto.SerialNumber, cancellationToken);
+
+            if (powerPlantToUpdate == null)
+            {
+                throw new ApiException($"Powerplant with serial number: {indicationDto.SerialNumber} not found ", HttpStatusCode.NotFound);
+            }
+
+            if (powerPlantToUpdate.ConnectionStatus == ConnectionStatus.Disconnected)
+            {
+                throw new ApiException($"Powerplant with serial number: {indicationDto.SerialNumber} is not connected ", HttpStatusCode.BadRequest);
+            }
+
+            var powerplantIndication = new Indication()
+            {
+                SerialNumber = indicationDto.SerialNumber,
+                Azimuth = indicationDto.Azimuth,
+                Elevation = indicationDto.Elevation,
+                WindSpeed = indicationDto.WindSpeed,
+                State = indicationDto.State,
+                Powerplant = powerPlantToUpdate,
+                PowerplantId = powerPlantToUpdate.PowerplantId,
+            };
+
+            if (await _applicationContext.Indications.Where(x => x.SerialNumber == indicationDto.SerialNumber).AnyAsync(cancellationToken))
+            {
+                var indication = await _applicationContext.Indications.FirstAsync(x => x.SerialNumber == indicationDto.SerialNumber, cancellationToken);
+                indication.Azimuth = indicationDto.Azimuth;
+                indication.Elevation = indicationDto.Elevation;
+                indication.WindSpeed = indicationDto.WindSpeed;
+                indication.State = indicationDto.State;
+            }
+            else
+            {
+                throw new ApiException($"Indication not found", HttpStatusCode.BadRequest);
+            }
+
+            powerPlantToUpdate.Indication = powerplantIndication;
+
+            await _applicationContext.SaveChangesAsync(cancellationToken);
+
+            return new IndicationDto(powerPlantToUpdate.SerialNumber, powerplantIndication.Azimuth, powerplantIndication.Elevation, powerplantIndication.WindSpeed, powerplantIndication.State);
+        }
+
+        public async Task<IndicationDto> AddIndicationAsync(IndicationDto indicationDto, CancellationToken cancellationToken)
+        {
+            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstOrDefaultAsync(x => x.SerialNumber == indicationDto.SerialNumber, cancellationToken);
 
             if (powerPlantToUpdate == null)
             {
@@ -46,11 +90,7 @@ namespace Backend.Services
 
             if(await _applicationContext.Indications.Where(x => x.SerialNumber == indicationDto.SerialNumber).AnyAsync(cancellationToken))
             {
-                var indication = await _applicationContext.Indications.FirstAsync(x => x.SerialNumber == indicationDto.SerialNumber, cancellationToken);
-                indication.Azimuth = indicationDto.Azimuth;
-                indication.Elevation = indicationDto.Elevation;
-                indication.WindSpeed = indicationDto.WindSpeed;
-                indication.State = indicationDto.State;
+                throw new ApiException($"Indication for this powerplant already exists ", HttpStatusCode.BadRequest);
             }
             else
             {
@@ -65,7 +105,7 @@ namespace Backend.Services
 
         public async Task<IndicationDto> GetIndication(string serialNumber, CancellationToken cancellationToken)
         {
-            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstAsync(x => x.SerialNumber == serialNumber, cancellationToken);
+            var powerPlantToUpdate = await _applicationContext.Powerplants.FirstOrDefaultAsync(x => x.SerialNumber == serialNumber, cancellationToken);
 
             if (powerPlantToUpdate == null)
             {
@@ -77,7 +117,12 @@ namespace Backend.Services
                 throw new ApiException($"Powerplant with serial number: {serialNumber} is not connected ", HttpStatusCode.BadRequest);
             }
 
-            var indication = await _applicationContext.Indications.FirstAsync(x => x.SerialNumber == serialNumber, cancellationToken);
+            var indication = await _applicationContext.Indications.FirstOrDefaultAsync(x => x.SerialNumber == serialNumber, cancellationToken);
+
+            if (indication == null)
+            {
+                throw new ApiException($"There is no powerplant indication", HttpStatusCode.NotFound);
+            }
 
             return new IndicationDto(indication.SerialNumber, indication.Azimuth, indication.Elevation, indication.WindSpeed, indication.State);
         }

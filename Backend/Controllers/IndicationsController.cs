@@ -15,10 +15,16 @@ namespace Backend.Controllers
             _indicationService = indicationService;
         }
 
-        [HttpPost("update")]
-        public async Task UpdateOrAddIndication([FromBody] IndicationDto solarTrackerIndication, CancellationToken cancellationToken)
+        [HttpPut("update")]
+        public async Task UpdateIndication([FromBody] IndicationDto solarTrackerIndication, CancellationToken cancellationToken)
         {
-            await _indicationService.UpdateOrAddIndication(solarTrackerIndication, cancellationToken);
+            await _indicationService.UpdateIndicationAsync(solarTrackerIndication, cancellationToken);
+        }
+
+        [HttpPost("create")]
+        public async Task CreateIndication([FromBody] IndicationDto solarTrackerIndication, CancellationToken cancellationToken)
+        {
+            await _indicationService.AddIndicationAsync(solarTrackerIndication, cancellationToken);
         }
 
         [HttpGet("read")]

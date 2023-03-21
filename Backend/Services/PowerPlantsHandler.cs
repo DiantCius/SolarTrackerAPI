@@ -1,4 +1,5 @@
 ﻿using Backend.DataAccess;
+using Backend.DTO;
 using Backend.DTO.Requests;
 using Backend.DTO.Responses;
 using Backend.Errors;
@@ -36,42 +37,36 @@ namespace Backend.Services
                 SerialNumber = createPowerplantRequest.SerialNumber,
                 Tariff= createPowerplantRequest.Tariff,
                 City= createPowerplantRequest.City,
-                Latitude= createPowerplantRequest.Latitude,
-                Longitude = createPowerplantRequest.Longitude,
                 User = user,
                 UserId = user.UserId
             };
-
             await _context.Powerplants.AddAsync(newPowerplant, cancellationToken);
             await _context.SaveChangesAsync(cancellationToken);
-            //int[] state =  { 0, 0, 0 };
-            //Indications.AddSolarTrackerIndication(new SolarTrackerIndication { SerialNumber = newPowerplant.SerialNumber, Azimuth = 0F, Elevation = 0F, WindSpeed = 0F, State = state });
 
             return new CreatePowerplantResponse(newPowerplant.Name,newPowerplant.City, newPowerplant.Latitude, newPowerplant.Longitude, newPowerplant.Tariff, newPowerplant.PowerplantType, newPowerplant.SerialNumber, newPowerplant.ConnectionStatus);
         }
 
-        public async Task<DeletePowerplantResponse> DeletePowerPlantAsync(DeletePowerplantRequest deletePowerPlantRequest, CancellationToken cancellationToken)
+        public async Task<Powerplant> DeletePowerplantAsync(int id, CancellationToken cancellationToken)
         {
-            var powerplantToDelete = await _context.Powerplants.Where(x => x.SerialNumber == deletePowerPlantRequest.SerialNumber).FirstAsync(cancellationToken);
-            var serialNumber = powerplantToDelete.SerialNumber;
+            var powerplantToDelete = await _context.Powerplants.FirstOrDefaultAsync(x => x.PowerplantId == id,cancellationToken);
             if (powerplantToDelete == null)
             {
-                throw new ApiException($"Powerplant with: {deletePowerPlantRequest.SerialNumber} serial number not found", HttpStatusCode.NotFound);
+                throw new ApiException($"Powerplant with: {id} id not found", HttpStatusCode.NotFound);
             }
 
             _context.Powerplants.Remove(powerplantToDelete);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return new DeletePowerplantResponse(powerplantToDelete.Name, powerplantToDelete.City, powerplantToDelete.Latitude, powerplantToDelete.Longitude, powerplantToDelete.Tariff, powerplantToDelete.PowerplantType, powerplantToDelete.SerialNumber, powerplantToDelete.ConnectionStatus);
+            return powerplantToDelete;
         }
 
-        public async Task<PowerplantListResponse> GetAllPowerPlantsAsync(CancellationToken cancellationToken)
+        public async Task<PowerplantListResponse> GetAllPowerplantsAsync(CancellationToken cancellationToken)
         {
             var powerplantList = await _context.Powerplants.OrderBy(x => x.PowerplantId).ToListAsync(cancellationToken);
             return new PowerplantListResponse(powerplantList);
         }
 
-        public async Task<PowerplantListResponse> GetAllPowerPlantsForUserAsync(CancellationToken cancellationToken)
+        public async Task<PowerplantListResponse> GetAllPowerplantsForUserAsync(CancellationToken cancellationToken)
         {
             var user = await _context.Users.FirstAsync(x => x.Username == _currentUser.GetCurrentUsername(), cancellationToken);
 
@@ -79,7 +74,18 @@ namespace Backend.Services
             return new PowerplantListResponse(powerplantList);
         }
 
-        public async Task<ConnectionStatus> UpdatePowerPlantStatusAsync(UpdatePowerplantStatusRequest updatePowerplantStatusRequest, CancellationToken cancellationToken)
+        public async Task<Powerplant> GetPowerPlantsByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var powerplant = await _context.Powerplants.FirstOrDefaultAsync(x => x.PowerplantId == id, cancellationToken);
+            if (powerplant == null)
+            {
+                throw new ApiException($"Powerplant with id: {id} not found ", HttpStatusCode.NotFound);
+            }
+            return powerplant;
+        }
+
+
+        public async Task<ConnectionStatus> UpdatePowerplantStatusAsync(UpdatePowerplantStatusRequest updatePowerplantStatusRequest, CancellationToken cancellationToken)
         {
             var powerplantToUpdate = await _context.Powerplants.FirstAsync(x => x.SerialNumber == updatePowerplantStatusRequest.SerialNumber, cancellationToken);
 

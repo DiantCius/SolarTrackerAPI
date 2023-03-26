@@ -5,7 +5,10 @@ using Backend.DTO.Responses;
 using Backend.Errors;
 using Backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Globalization;
 using System.Net;
+using System.Threading;
 
 namespace Backend.Services
 {
@@ -54,13 +57,6 @@ namespace Backend.Services
         }
 
 
-        public async Task<EnergyProductionsResponse> GetAllEnergyProductions(string serialNumber, CancellationToken cancellationToken)
-        {
-            var energyProductions = await _applicationContext.EnergyProductions.Where(x => x.SerialNumber == serialNumber).OrderBy(x => x.CurrentTime).ToListAsync(cancellationToken);
-            return new EnergyProductionsResponse(energyProductions);
-        }
-
-
         public async Task<EnergyProductionsResponse> GetAllEnergyProductionsFromToday(string serialNumber, CancellationToken cancellationToken)
         {
             Powerplant powerPlant = await CheckPowerplant(serialNumber, cancellationToken);
@@ -73,21 +69,60 @@ namespace Backend.Services
             return new EnergyProductionsResponse(energyProductions);
         }
 
+        public async Task<EnergyProductionsResponse> GetAllEnergyProductions(string serialNumber, CancellationToken cancellationToken)
+        {
+            var energyProductions = await _applicationContext.EnergyProductions.Where(x => x.SerialNumber == serialNumber).OrderBy(x => x.CurrentTime).ToListAsync(cancellationToken);
+            return new EnergyProductionsResponse(energyProductions);
+        }
+
         public EnergyProduction GetDailyProduction(int day, List<EnergyProduction> productions)
         {
             var response = productions.Where(x => x.CurrentTime.Day == day).OrderByDescending(x => x.DailyProduction).First();
             return response;
         }
 
-        public async Task<long> GetTotalEnergyProductionFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
+        public async Task<int> GetTotalEnergyProductionFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
         {
-            var production = await _applicationContext.EnergyProductions
-                .Where(x => x.SerialNumber == request.serialNumber && x.CurrentTime.Year == request.year && x.CurrentTime.Year == request.year)
+            var productions = await _applicationContext.EnergyProductions
+                .Where(x => x.SerialNumber == request.serialNumber && x.CurrentTime.Year == request.year)
                 .OrderBy(x => x.CurrentTime)
                 .ToListAsync(cancellationToken);
-            var long_sum = production.Select(e => long.Parse(e.DailyProduction));
-            var sum = long_sum.Sum();
+            if (!productions.Any())
+            {
+                throw new ApiException($"No energy productions for this year", HttpStatusCode.NotFound);
+            }
+            var sum = productions.Select(e => int.Parse(e.CurrentProduction)).Sum();
             return sum;
+        }
+
+        public int GetMonthlyProduction(int month, List<EnergyProduction> productions)
+        {
+            return productions.Where(x => x.CurrentTime.Month == month).Select(e => int.Parse(e.CurrentProduction)).Sum();
+        }
+
+        public async Task<MonthlyEnergyProductionsResponse> GetMonthlyEnergyProductionsFromYearAsync(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
+        {
+            var yearlyProductions = await _applicationContext.EnergyProductions
+                .Where(x => x.SerialNumber == request.serialNumber && x.CurrentTime.Year == request.year )
+                .OrderBy(x => x.CurrentTime)
+                .ToListAsync(cancellationToken);
+
+            if (!yearlyProductions.Any())
+            {
+                throw new ApiException($"No energy productions for this year", HttpStatusCode.NotFound);
+            }
+
+            var months = yearlyProductions.Select(x => x.CurrentTime.Month).Distinct();
+
+            List<MonthlyProduction> list = new List<MonthlyProduction>();
+
+            foreach(int month in months)
+            {
+                var productionAmount = GetMonthlyProduction(month, yearlyProductions);
+                list.Add(new MonthlyProduction(month, request.year, productionAmount));
+            }
+
+            return new MonthlyEnergyProductionsResponse(request.serialNumber, list);
         }
 
         public async Task<EnergyProductionsResponse> GetDailyEnergyProductionsFromMonthAsync(MonthlyProductionsRequest request, CancellationToken cancellationToken)

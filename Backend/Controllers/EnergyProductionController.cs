@@ -45,8 +45,16 @@ namespace Backend.Controllers
             return response;
         }
 
+        [HttpGet("year/monthly")]
+        public async Task<MonthlyEnergyProductionsResponse> GetTotalMonthlyEnergyProductionsFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
+        {
+
+            var response = await energyProductionHandler.GetMonthlyEnergyProductionsFromYearAsync(request, cancellationToken);
+            return response;
+        }
+
         [HttpGet("year/total")]
-        public async Task<long> GetTotalEnergyProductionFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
+        public async Task<int> GetTotalEnergyProductionFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
         {
 
             var response = await energyProductionHandler.GetTotalEnergyProductionFromYear(request, cancellationToken);

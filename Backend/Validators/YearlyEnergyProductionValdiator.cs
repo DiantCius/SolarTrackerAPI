@@ -5,10 +5,9 @@ namespace Backend.Validators
 {
     public class YearlyEnergyProductionValdiator : AbstractValidator<YearlyEnergyProductionRequest>
     {
-        public YearlyEnergyProductionValdiator() 
+        public YearlyEnergyProductionValdiator()
         {
             RuleFor(x => x.serialNumber).NotNull().NotEmpty();
-            RuleFor(x => x.year).NotNull().NotEmpty();
         }
     }
 

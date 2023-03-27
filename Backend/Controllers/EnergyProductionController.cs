@@ -32,7 +32,7 @@ namespace Backend.Controllers
         }
 
         [HttpGet("month/daily")]
-        public async Task<EnergyProductionsResponse> GetDailyEnergyProductionsFromMonth(MonthlyProductionsRequest request, CancellationToken cancellationToken)
+        public async Task<EnergyProductionsResponse> GetDailyEnergyProductionsFromMonth(DailyProductionsFromMonthRequest request, CancellationToken cancellationToken)
         {
             var response = await energyProductionHandler.GetDailyEnergyProductionsFromMonthAsync(request, cancellationToken);
             return response;
@@ -46,18 +46,18 @@ namespace Backend.Controllers
         }
 
         [HttpGet("year/monthly")]
-        public async Task<MonthlyEnergyProductionsResponse> GetTotalMonthlyEnergyProductionsFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
+        public async Task<MonthlyEnergyProductionsResponse> GetTotalMonthlyEnergyProductionsFromYear(MonthlyProductionsFromYearRequest request, CancellationToken cancellationToken)
         {
 
             var response = await energyProductionHandler.GetMonthlyEnergyProductionsFromYearAsync(request, cancellationToken);
             return response;
         }
 
-        [HttpGet("year/total")]
-        public async Task<int> GetTotalEnergyProductionFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
+        [HttpGet("year/all")]
+        public async Task<YearlyEnergyProductionsResponse> GetTotalEnergyProductionFromYear(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
         {
 
-            var response = await energyProductionHandler.GetTotalEnergyProductionFromYear(request, cancellationToken);
+            var response = await energyProductionHandler.GetYearlyEnergyProductions(request, cancellationToken);
             return response;
         }
     }

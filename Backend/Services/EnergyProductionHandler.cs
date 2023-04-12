@@ -39,6 +39,17 @@ namespace Backend.Services
 
         }
 
+        public async Task<EnergyProduction> GetLastEnergyProduction(string serialNumber, CancellationToken cancellationToken)
+        {
+            var energyProduction = await _applicationContext.EnergyProductions.Where(x=> x.CurrentTime.Day == DateTime.Today.Day).OrderByDescending(x => x.EnergyProductionId).FirstOrDefaultAsync(cancellationToken);
+            if (energyProduction == null)
+            {
+                throw new ApiException($"Production not found", HttpStatusCode.NotFound);
+            }
+
+            return energyProduction;
+        }
+
         private async Task<Powerplant> CheckPowerplant(String serialNumber, CancellationToken cancellationToken)
         {
             var powerPlant = await _applicationContext.Powerplants.FirstAsync(x => x.SerialNumber == serialNumber, cancellationToken);
@@ -69,6 +80,18 @@ namespace Backend.Services
             return new EnergyProductionsResponse(energyProductions);
         }
 
+        public async Task<EnergyProductionsResponse> GetAllEnergyProductionsFromDay(DailyProductionsRequest request, CancellationToken cancellationToken)
+        {
+            Powerplant powerPlant = await CheckPowerplant(request.serialNumber, cancellationToken);
+
+            var energyProductions = await _applicationContext.EnergyProductions
+                .Where(x => x.SerialNumber == request.serialNumber && x.CurrentTime.Year == request.year && x.CurrentTime.Month == request.month && x.CurrentTime.Day==request.day)
+                .OrderBy(x => x.CurrentTime)
+                .ToListAsync(cancellationToken);
+
+            return new EnergyProductionsResponse(energyProductions);
+        }
+
         public async Task<EnergyProductionsResponse> GetAllEnergyProductions(string serialNumber, CancellationToken cancellationToken)
         {
             var energyProductions = await _applicationContext.EnergyProductions.Where(x => x.SerialNumber == serialNumber).OrderBy(x => x.CurrentTime).ToListAsync(cancellationToken);
@@ -77,13 +100,24 @@ namespace Backend.Services
 
         public EnergyProduction GetDailyProduction(int day, List<EnergyProduction> productions)
         {
-            var response = productions.Where(x => x.CurrentTime.Day == day).OrderByDescending(x => x.DailyProduction).First();
+            var response = productions.Where(x => x.CurrentTime.Day == day).OrderByDescending(x => x.EnergyProductionId).First();
             return response;
         }
 
-        public int GetYearlyProduction(int year, List<EnergyProduction> productions)
+        public float GetYearlyProduction(int year, List<EnergyProduction> productions)
         {
-            return productions.Where(x => x.CurrentTime.Month == year).Select(e => int.Parse(e.CurrentProduction)).Sum();
+            var yearlyProductions = productions.Where(x => x.CurrentTime.Year == year).ToList();
+
+            var months = yearlyProductions.Select(x => x.CurrentTime.Month).Distinct();
+
+            float sum = 0;
+
+            foreach (int month in months)
+            {
+                var productionAmount = GetMonthlyProduction(month, yearlyProductions);
+                sum+= productionAmount;
+            }
+            return sum;
         }
 
         public async Task<YearlyEnergyProductionsResponse> GetYearlyEnergyProductions(YearlyEnergyProductionRequest request, CancellationToken cancellationToken)
@@ -110,10 +144,21 @@ namespace Backend.Services
             return new YearlyEnergyProductionsResponse(request.serialNumber, list);
         }
 
-        public int GetMonthlyProduction(int month, List<EnergyProduction> productions)
+        public float GetMonthlyProduction(int month, List<EnergyProduction> productions)
         {
-            return productions.Where(x => x.CurrentTime.Month == month).Select(e => int.Parse(e.CurrentProduction)).Sum();
+            NumberFormatInfo nfi = new NumberFormatInfo();
+            nfi.NumberDecimalSeparator = ".";
+            float sum = 0;
+            var monthlyProductions = productions.Where(x => x.CurrentTime.Month == month);
+            var days = monthlyProductions.Select(x => x.CurrentTime.Day).Distinct();
+            foreach(int day in days)
+            {
+                var production = monthlyProductions.Where(x => x.CurrentTime.Day == day).OrderByDescending(x => x.EnergyProductionId).First();
+                sum = sum+ float.Parse(production.DailyProduction, nfi);
+            }
+            return sum;
         }
+
 
         public async Task<MonthlyEnergyProductionsResponse> GetMonthlyEnergyProductionsFromYearAsync(MonthlyProductionsFromYearRequest request, CancellationToken cancellationToken)
         {

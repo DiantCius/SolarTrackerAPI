@@ -110,7 +110,7 @@ builder.Services.AddSwaggerGen(c =>
 
 });
 
-
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 
@@ -125,14 +125,25 @@ app.UseMiddleware<ErrorHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 
+app.MapHub<IndicationsHub>("/Indication");
+
 app.UseAuthentication();
 
-app.UseCors(builder =>
+/*app.UseCors(builder =>
 {
     builder.AllowAnyOrigin()
            .AllowAnyMethod()
            .AllowAnyHeader();
+});*/
+
+app.UseCors(builder =>
+{
+    builder.WithOrigins("http://127.0.0.1:5173", "https://frontend-pi-jet.vercel.app/")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials();
 });
+
 
 
 app.UseAuthorization();

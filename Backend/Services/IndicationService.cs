@@ -3,6 +3,7 @@ using Backend.DTO;
 using Backend.DTO.Requests;
 using Backend.Errors;
 using Backend.Models;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using System.Threading;
@@ -12,10 +13,12 @@ namespace Backend.Services
     public class IndicationService
     {
         private readonly ApplicationContext _applicationContext;
+        private readonly IHubContext<IndicationsHub> _indicationsHub;
 
-        public IndicationService(ApplicationContext applicationContext)
+        public IndicationService(ApplicationContext applicationContext, IHubContext<IndicationsHub> indicationsHub)
         {
             _applicationContext = applicationContext;
+            _indicationsHub = indicationsHub;
         }
 
         public async Task<IndicationDto> UpdateIndicationAsync(IndicationDto indicationDto, CancellationToken cancellationToken)
@@ -60,7 +63,11 @@ namespace Backend.Services
 
             await _applicationContext.SaveChangesAsync(cancellationToken);
 
-            return new IndicationDto(powerPlantToUpdate.SerialNumber, powerplantIndication.Azimuth, powerplantIndication.Elevation, powerplantIndication.WindSpeed, powerplantIndication.State);
+            var indicationDTO = new IndicationDto(powerPlantToUpdate.SerialNumber, powerplantIndication.Azimuth, powerplantIndication.Elevation, powerplantIndication.WindSpeed, powerplantIndication.State);
+
+            await _indicationsHub.Clients.Group(indicationDTO.SerialNumber).SendAsync("ReceiveIndication", indicationDTO);
+
+            return indicationDTO;
         }
 
         public async Task<IndicationDto> AddIndicationAsync(IndicationDto indicationDto, CancellationToken cancellationToken)
